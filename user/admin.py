@@ -5,6 +5,9 @@ from .models import CustomUser
 
 @admin.register(CustomUser)
 class CustomUserAdmin(admin.ModelAdmin):
-    
-    
-    empty_value_display = "Non renseigné"
+    fieldsets = [
+        ("ID", {"fields": ["first_name", "last_name", "email"]}),
+        ("Authentication", {"fields": ["username", "password"]}),
+        ("Permission", {"fields": ["role"]})
+    ]
+
