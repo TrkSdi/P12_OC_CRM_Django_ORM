@@ -31,7 +31,7 @@ class Contract(models.Model):
     date_created = models.DateField()
     date_updated = models.DateField()
     status = models.BooleanField(default=False)
-    amount = models.FloatField(max_length=4)
+    amount = models.FloatField()
     payement_due = models.DateField()
     
 
