@@ -23,13 +23,14 @@ class ProspectAdmin(admin.ModelAdmin):
 class ContractAdmin(admin.ModelAdmin):
     fieldsets = [
         ("Contrat", {"fields": ["client", "date_created", "date_updated", "status"]}),
-        ("Facturation", {"fields": ["amount", "payement_due"]})
+        ("Facturation", {"fields": ["amount", "payement_due"]}),
+        ("Contact", {"fields": ["sales_contact"]}),
     ]
     
 @admin.register(Event)
 class Eventadmin(admin.ModelAdmin):
     fieldsets = [
-        ("Evenement", {"fields": ["client", "date_created", "date_updated", "attendees", "event_status"]}),
+        ("Evenement", {"fields": ["client", "date_created", "date_updated", "attendees", "event_status", "event_date"]}),
         ("Note", {"fields": ["note"]}),
         ("Contact", {"fields": ["support_contact"]}),
         

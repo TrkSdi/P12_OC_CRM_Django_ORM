@@ -12,7 +12,10 @@ class CustomUser(AbstractUser):
     
     email = models.EmailField(unique=True)
     role = models.CharField(max_length=10, choices=ROLE, null=True, blank=True)
-    #username = models.CharField(max_length=25, unique=True)
+    username = models.CharField(max_length=25, unique=True)
+    is_staff = models.BooleanField(('staff status'), default=True,)
+        
+    is_active = models.BooleanField(('active'), default=True,)
 
     def __str__(self):
         return f'{self.username} ({self.role})'

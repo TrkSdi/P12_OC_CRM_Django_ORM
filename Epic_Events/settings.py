@@ -142,6 +142,13 @@ JAZZMIN_SETTINGS = {
     "site_brand": "EPICS EVENT",
     "site_logo": "logo-1.png",
     "welcome_sign": "Bienvenue sur le CRM EPIC EVENTS",
-    "copyright": "Tarik SADKHI ©"
+    "copyright": "Tarik SADKHI ©",
+    "search_model": ["CRM.Event", "user.CustomUser"],
+    "topmenu_links": [{"model":"CRM.Events"}, {"model":"user.CustomUser"}]
     
+}
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.SessionAuthentication',)
 }

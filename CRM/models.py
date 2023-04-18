@@ -13,6 +13,8 @@ class Client(models.Model):
     date_updated = models.DateField()
     sales_contact = models.ForeignKey(AUTH_USER_MODEL, on_delete=models.CASCADE, default=None)
     
+    def __str__(self):
+        return self.first_name
 
 class Prospect(models.Model):
     first_name = models.CharField(max_length=25)
@@ -26,7 +28,7 @@ class Prospect(models.Model):
 
 
 class Contract(models.Model):
-    sales_contact = models.ForeignKey(AUTH_USER_MODEL, on_delete=models.CASCADE)
+    sales_contact = models.ForeignKey(AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, blank=True, default=None)
     client = models.ForeignKey(Client, on_delete=models.CASCADE)
     date_created = models.DateField()
     date_updated = models.DateField()
@@ -34,9 +36,12 @@ class Contract(models.Model):
     amount = models.FloatField()
     payement_due = models.DateField()
     
+    def __str__(self):
+        return f'Contrat: {self.client}'
+    
 
 class Event(models.Model):
-    client = models.ForeignKey(Client, on_delete=models.CASCADE)
+    client = models.ForeignKey(Client, on_delete=models.CASCADE, null=True, blank=True, default=None)
     date_created = models.DateField()
     date_updated = models.DateField()
     support_contact = models.ForeignKey(AUTH_USER_MODEL, on_delete=models.CASCADE)
@@ -44,3 +49,7 @@ class Event(models.Model):
     attendees = models.IntegerField()
     event_date = models.DateTimeField()
     note = models.TextField(max_length=500)
+    
+    def __str__(self):
+        return f'Evenement: {self.client}'
+    

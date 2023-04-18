@@ -8,6 +8,6 @@ class CustomUserAdmin(admin.ModelAdmin):
     fieldsets = [
         ("ID", {"fields": ["first_name", "last_name", "email"]}),
         ("Authentication", {"fields": ["username", "password"]}),
-        ("Permission", {"fields": ["role"]})
+        ("Permission", {"fields": ["role", "is_staff", "is_active"]})
     ]
 
