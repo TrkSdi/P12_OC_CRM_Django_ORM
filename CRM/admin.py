@@ -1,6 +1,7 @@
 from django.contrib import admin
 from .models import Client, Lead, Contract, Event
-# Register your models here.
+from django.contrib import messages
+
 
 
 @admin.register(Client)
@@ -11,7 +12,8 @@ class ClientAdmin(admin.ModelAdmin):
         ("Contact", {"fields": ["sales_contact"]}),
     ]
     readonly_fields = ["date_created","date_updated"]
-    
+
+
 @admin.register(Lead)
 class LeadAdmin(admin.ModelAdmin):
     fieldsets = [
@@ -20,6 +22,31 @@ class LeadAdmin(admin.ModelAdmin):
         ("Contact", {"fields": ["sales_contact"]}),
     ]
     readonly_fields = ["date_created","date_updated"]
+    
+    actions = ['convert_to_client']
+    def convert_to_client(self,request, queryset):
+        lead = queryset.get()
+        print("LEAD", lead)
+        if lead.converted_to_client is False:
+            lead.converted_to_client = True
+            lead.save()
+            client = Client.objects.create(
+                    first_name = lead.first_name,
+                    last_name = lead.last_name,
+                    email = lead.email, 
+                    phone = lead.phone,
+                    mobile = lead.mobile,
+                    company_name = lead.company_name,
+                    date_created = lead.date_created,
+                    date_updated = lead.date_updated,
+                    sales_contact = lead.sales_contact
+            )
+            client.save()
+        else:
+            messages.error(request, 'Déjà client')
+            
+        
+
 
 @admin.register(Contract)
 class ContractAdmin(admin.ModelAdmin):
@@ -29,7 +56,8 @@ class ContractAdmin(admin.ModelAdmin):
         ("Contact", {"fields": ["sales_contact"]}),
     ]
     readonly_fields = ["date_created","date_updated"]
-    
+
+
 @admin.register(Event)
 class Eventadmin(admin.ModelAdmin):
     fieldsets = [
