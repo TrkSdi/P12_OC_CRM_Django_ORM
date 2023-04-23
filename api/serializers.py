@@ -1,7 +1,6 @@
 from rest_framework import serializers
 from user.models import CustomUser
-from CRM.models import Client, Prospect, Contract, Event
-
+from CRM.models import Client, Lead, Contract, Event, EventStatus
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -12,38 +11,46 @@ class UserSerializer(serializers.ModelSerializer):
                   'last_name',
                   'email',
                   'role',]
-        
+
 
 class ClientSerializer(serializers.ModelSerializer):
     class Meta:
         model = Client
-        fields = ['first_name',
+        fields = ['id',
+                  'first_name',
                   'last_name',
                   'email',
                   'phone',
                   'mobile',
-                  'date_created',
-                  'date_updated',
-                  'sales_contact'
-                  ]
-        
-class ProspectSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Prospect
-        fields = ['first_name',
-                  'last_name',
-                  'email',
-                  'phone',
-                  'mobile',
+                  'company_name',
                   'date_created',
                   'date_updated',
                   'sales_contact'
                   ]
 
+
+class LeadSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Lead
+        fields = ['id',
+                  'first_name',
+                  'last_name',
+                  'email',
+                  'phone',
+                  'mobile',
+                  'company_name',
+                  'date_created',
+                  'date_updated',
+                  'sales_contact',
+                  'converted_to_client'
+                  ]
+
+
 class ContractSerializer(serializers.ModelSerializer):
     class Meta:
         model = Contract
-        fields = ['sales_contact',
+        fields = ['id',
+                  'sales_contact',
                   'client',
                   'date_created',
                   'date_updated',
@@ -51,11 +58,13 @@ class ContractSerializer(serializers.ModelSerializer):
                   'amount',
                   'payement_due',
                   ]
-        
+
+ 
 class EventSerializer(serializers.ModelSerializer):
     class Meta:
         model = Event
-        fields = ['client',
+        fields = ['id',
+                  'client',
                   'date_created',
                   'date_updated',
                   'support_contact',
@@ -64,4 +73,11 @@ class EventSerializer(serializers.ModelSerializer):
                   'event_date',
                   'note',
                   ]
-        
+
+class EventStatusSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = EventStatus
+        fields = ['id',
+                  'name',
+                  'status'
+                  ]

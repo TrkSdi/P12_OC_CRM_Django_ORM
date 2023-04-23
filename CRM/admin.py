@@ -1,20 +1,21 @@
 from django.contrib import admin
-from .models import Client, Prospect, Contract, Event
+from .models import Client, Lead, Contract, Event
 # Register your models here.
 
 
 @admin.register(Client)
 class ClientAdmin(admin.ModelAdmin):
     fieldsets = [
-        ("Informations client", {"fields": ["first_name", "last_name", "email", "phone", "mobile"]}),
-        ("Date", {"fields": ["date_created", "date_updated"]}),
+        ("Informations client", {"fields": ["first_name", "last_name", "email", "phone", "mobile", "company_name"]}),
+        ("Date", {"fields": ['date_created','date_updated']}),
         ("Contact", {"fields": ["sales_contact"]}),
     ]
+    readonly_fields = ["date_created","date_updated"]
     
-@admin.register(Prospect)
-class ProspectAdmin(admin.ModelAdmin):
+@admin.register(Lead)
+class LeadAdmin(admin.ModelAdmin):
     fieldsets = [
-        ("Informations client", {"fields": ["first_name", "last_name", "email", "phone", "mobile"]}),
+        ("Informations client", {"fields": ["first_name", "last_name", "email", "phone", "mobile","company_name", "converted_to_client"]}),
         ("Date", {"fields": ["date_created", "date_updated"]}),
         ("Contact", {"fields": ["sales_contact"]}),
     ]
