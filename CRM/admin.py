@@ -26,7 +26,6 @@ class LeadAdmin(admin.ModelAdmin):
     actions = ['convert_to_client']
     def convert_to_client(self,request, queryset):
         lead = queryset.get()
-        print("LEAD", lead)
         if lead.converted_to_client is False:
             lead.converted_to_client = True
             lead.save()
@@ -44,8 +43,6 @@ class LeadAdmin(admin.ModelAdmin):
             client.save()
         else:
             messages.error(request, 'Déjà client')
-            
-        
 
 
 @admin.register(Contract)
@@ -57,6 +54,16 @@ class ContractAdmin(admin.ModelAdmin):
     ]
     readonly_fields = ["date_created","date_updated"]
 
+    actions = ['validate_a_contract']
+    
+    def validate_a_contract(self, request, queryset):
+        contract = queryset.get()
+        if contract.status is False:
+            contract.status = True
+            contract.save()
+        else:
+            messages.error(request, 'Contrat déjà validé')
+    
 
 @admin.register(Event)
 class Eventadmin(admin.ModelAdmin):

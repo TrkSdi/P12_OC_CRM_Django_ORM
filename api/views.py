@@ -1,8 +1,9 @@
+from django.http import HttpResponse
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.decorators import api_view, action
 from rest_framework.permissions import IsAuthenticated
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, render
 from django.contrib import messages
 
 from user.models import CustomUser
@@ -61,6 +62,13 @@ class ContractViewSet(ModelViewSet):
     serializer_class = ContractSerializer
     queryset = Contract.objects.all()
     permission_classes = []
+    
+    @action(detail=True, methods=['get'])
+    def validate_a_contract(self, request, pk):
+        contract = Contract.objects.get(pk=pk)
+        contract.status = True
+        contract.save()
+        return Response()
 
 
 class EventViewSet(ModelViewSet):
