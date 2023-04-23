@@ -1,19 +1,18 @@
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, action
 from rest_framework.permissions import IsAuthenticated
 from django.shortcuts import get_object_or_404
 from django.contrib import messages
 
 from user.models import CustomUser
-from CRM.models import Client, Lead, Contract, Event
-from api.serializers import UserSerializer, ClientSerializer, LeadSerializer, ContractSerializer, EventSerializer
+from CRM.models import Client, Lead, Contract, Event, EventStatus
 from api.permissions import IsAdmin
+from api.serializers import (UserSerializer, ClientSerializer,
+                             LeadSerializer, ContractSerializer,
+                             EventSerializer, EventStatusSerializer)
 
 
-
-from django.contrib import messages
-from rest_framework.decorators import action
 
 class UserViewSet(ModelViewSet):
     
@@ -52,8 +51,13 @@ class ContractViewSet(ModelViewSet):
 
 
 class EventViewSet(ModelViewSet):
-    serializer_class =EventSerializer
+    serializer_class = EventSerializer
     queryset = Event.objects.all()
+    permission_classes = []
+
+class EventStatusViewSet(ModelViewSet):
+    serializer_class = EventStatusSerializer
+    queryset = EventStatus.objects.all()
     permission_classes = []
     
 

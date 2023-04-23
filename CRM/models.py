@@ -69,6 +69,8 @@ class EventStatus(models.Model):
     name = models.CharField(max_length=50)
     status = models.BooleanField("Commencé", default=False)
 
+    def __str__(self):
+        return self.name
     
 class Event(models.Model):
     client = models.ForeignKey(Client, on_delete=models.CASCADE, null=True, blank=True, default=None)

@@ -19,6 +19,7 @@ class LeadAdmin(admin.ModelAdmin):
         ("Date", {"fields": ["date_created", "date_updated"]}),
         ("Contact", {"fields": ["sales_contact"]}),
     ]
+    readonly_fields = ["date_created","date_updated"]
 
 @admin.register(Contract)
 class ContractAdmin(admin.ModelAdmin):
@@ -27,6 +28,7 @@ class ContractAdmin(admin.ModelAdmin):
         ("Facturation", {"fields": ["amount", "payement_due"]}),
         ("Contact", {"fields": ["sales_contact"]}),
     ]
+    readonly_fields = ["date_created","date_updated"]
     
 @admin.register(Event)
 class Eventadmin(admin.ModelAdmin):
@@ -34,5 +36,5 @@ class Eventadmin(admin.ModelAdmin):
         ("Evenement", {"fields": ["client", "date_created", "date_updated", "attendees", "event_status", "event_date"]}),
         ("Note", {"fields": ["note"]}),
         ("Contact", {"fields": ["support_contact"]}),
-        
     ]
+    readonly_fields = ["date_created","date_updated"]
