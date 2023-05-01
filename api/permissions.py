@@ -1,15 +1,9 @@
 from rest_framework import permissions
 
 
-class IsSupport(permissions.BasePermission):
+class ReadOnly(permissions.BasePermission):
     def has_permission(self, request, view):
-        user = request.user
-        if user.role == "Support":
-            return True
-
-    def has_object_permission(self, request, view, obj):
-        return self.has_permission
-
+        return super().has_permission(request, view)
 
 class IsSales(permissions.BasePermission):
     def has_permission(self, request, view):
@@ -18,7 +12,7 @@ class IsSales(permissions.BasePermission):
             return True
 
     def has_object_permission(self, request, view, obj):
-        return self.has_permission
+        return obj.sales_contact == request.user
 
 
 class IsAdmin(permissions.BasePermission):

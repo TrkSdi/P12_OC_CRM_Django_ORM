@@ -16,8 +16,18 @@ class ClientAdmin(admin.ModelAdmin):
 
 @admin.register(Lead)
 class LeadAdmin(admin.ModelAdmin):
+    list_display = ('first_name',
+                    'last_name',
+                    'converted_to_client',
+                    'sales_contact')
     fieldsets = [
-        ("Informations client", {"fields": ["first_name", "last_name", "email", "phone", "mobile","company_name", "converted_to_client"]}),
+        ("Informations client",{"fields": ["first_name",
+                                           "last_name",
+                                           "email",
+                                           "phone",
+                                           "mobile",
+                                           "company_name",
+                                           "converted_to_client"]}),
         ("Date", {"fields": ["date_created", "date_updated"]}),
         ("Contact", {"fields": ["sales_contact"]}),
     ]
@@ -47,8 +57,14 @@ class LeadAdmin(admin.ModelAdmin):
 
 @admin.register(Contract)
 class ContractAdmin(admin.ModelAdmin):
+    list_display = ("client",
+                    "status")
+    
     fieldsets = [
-        ("Contrat", {"fields": ["client", "date_created", "date_updated", "status"]}),
+        ("Contrat", {"fields": ["client",
+                                "date_created",
+                                "date_updated",
+                                "status"]}),
         ("Facturation", {"fields": ["amount", "payement_due"]}),
         ("Contact", {"fields": ["sales_contact"]}),
     ]
@@ -68,7 +84,12 @@ class ContractAdmin(admin.ModelAdmin):
 @admin.register(Event)
 class Eventadmin(admin.ModelAdmin):
     fieldsets = [
-        ("Evenement", {"fields": ["client", "date_created", "date_updated", "attendees", "event_status", "event_date"]}),
+        ("Evenement", {"fields": ["client",
+                                  "date_created",
+                                  "date_updated",
+                                  "attendees",
+                                  "event_status",
+                                  "event_date"]}),
         ("Note", {"fields": ["note"]}),
         ("Contact", {"fields": ["support_contact"]}),
     ]

@@ -39,12 +39,14 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django_filters',
     'rest_framework',
     'CRM',
     'user',
+    'rest_auth.registration',
 ]
 
-AUTH_USER_MODEL = 'user.CustomUser'
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -143,8 +145,6 @@ JAZZMIN_SETTINGS = {
     "site_logo": "logo-1.png",
     "welcome_sign": "Bienvenue sur le CRM EPIC EVENTS",
     "copyright": "Tarik SADKHI ©",
-    "search_model": ["CRM.Event", "user.CustomUser"],
-    "topmenu_links": [{"model":"CRM.Events"}, {"model":"user.CustomUser"}]
     
 }
 
@@ -152,3 +152,6 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework.authentication.SessionAuthentication',)
 }
+
+AUTH_USER_MODEL = 'user.CustomUser'
+

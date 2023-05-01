@@ -9,8 +9,17 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ['username',
                   'first_name',
                   'last_name',
+                  'password'
                   'email',
                   'role',]
+        extra_kwargs = {'password': {'write_only': True}}
+        
+        def create(self, validated_data):
+            password = validated_data.pop('password')
+            user = CustomUser(**validated_data)
+            user.set_password(password)
+            user.save()
+            return user
 
 
 class ClientSerializer(serializers.ModelSerializer):
@@ -55,6 +64,7 @@ class ContractSerializer(serializers.ModelSerializer):
                   'date_created',
                   'date_updated',
                   'status',
+                  'assigned',
                   'amount',
                   'payement_due',
                   ]
@@ -64,6 +74,7 @@ class EventSerializer(serializers.ModelSerializer):
     class Meta:
         model = Event
         fields = ['id',
+                  'contract',
                   'client',
                   'date_created',
                   'date_updated',
@@ -79,5 +90,5 @@ class EventStatusSerializer(serializers.ModelSerializer):
         model = EventStatus
         fields = ['id',
                   'name',
-                  'status'
+                  'status',
                   ]
