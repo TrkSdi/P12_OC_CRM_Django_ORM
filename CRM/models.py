@@ -1,4 +1,5 @@
 from django.db import models
+from django.forms import ValidationError
 from django.shortcuts import get_object_or_404
 from Epic_Events.settings import AUTH_USER_MODEL
 
@@ -12,7 +13,7 @@ class Client(models.Model):
     company_name = models.CharField("Compagnie", max_length=250, null=True, blank=True, default=None)
     date_created = models.DateTimeField("Date de création", auto_now_add=True)
     date_updated = models.DateTimeField("Mis à jour le", auto_now=True)
-    sales_contact = models.ForeignKey(AUTH_USER_MODEL, on_delete=models.PROTECT, default=None)
+    sales_contact = models.ForeignKey(AUTH_USER_MODEL, limit_choices_to={'role': 'Vente'}, on_delete=models.PROTECT, default=None)
     
     def __str__(self):
         return self.first_name
@@ -43,7 +44,7 @@ class Contract(models.Model):
     status = models.BooleanField("Contrat signé", default=False)
     amount = models.FloatField()
     payement_due = models.DateField()
-    assigned = models.BooleanField("Assigné", default=False)
+    
     
     def __str__(self):
         return f'Contrat de: {self.client}'
@@ -58,11 +59,11 @@ class EventStatus(models.Model):
 
 
 class Event(models.Model):
-    contract = models.ForeignKey(Contract, limit_choices_to={'status': True, 'assigned': False}, on_delete=models.CASCADE, null=True, blank=True, default=None )
+    contract = models.ForeignKey(Contract, limit_choices_to={'status': True}, on_delete=models.CASCADE, null=True)
     client = models.ForeignKey(Client, on_delete=models.CASCADE, null=True, blank=True, default=None)
     date_created = models.DateTimeField("Date de création", auto_now_add=True)
     date_updated = models.DateTimeField("Mis à jour le", auto_now=True)
-    support_contact = models.ForeignKey(AUTH_USER_MODEL, on_delete=models.PROTECT)
+    support_contact = models.ForeignKey(AUTH_USER_MODEL, limit_choices_to={'role': 'Support'}, on_delete=models.PROTECT)
     event_status = models.ForeignKey(EventStatus, on_delete=models.CASCADE)
     attendees = models.IntegerField()
     event_date = models.DateTimeField()
@@ -71,13 +72,5 @@ class Event(models.Model):
     def __str__(self):
         return f'Evenement: {self.client}'
     
-    def assign_contract(self, pk):
-        contract = Contract.objects.get(pk=pk)
-        print("CONTRACT", contract)
-        contract.assigned = True
-        contract.save()
-        client = contract.client
-        client.save()
-
 
     
