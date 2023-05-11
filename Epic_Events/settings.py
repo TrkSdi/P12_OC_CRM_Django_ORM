@@ -85,7 +85,7 @@ WSGI_APPLICATION = 'Epic_Events.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'EpicEvents',
+        'NAME': 'Epic_Events',
         'USER': 'admin_db',
         'PASSWORD': '123456',
         
@@ -150,8 +150,10 @@ JAZZMIN_SETTINGS = {
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework.authentication.SessionAuthentication',)
+        'rest_framework.authentication.SessionAuthentication',),
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAdminUser',
+    ],
 }
 
 AUTH_USER_MODEL = 'user.CustomUser'
-

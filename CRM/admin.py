@@ -1,4 +1,6 @@
 from django.contrib import admin
+from django.http.request import HttpRequest
+from django.contrib.admin.views.decorators import staff_member_required
 from .models import Client, Lead, Contract, Event
 from django.contrib import messages
 
@@ -12,7 +14,7 @@ class ClientAdmin(admin.ModelAdmin):
         ("Contact", {"fields": ["sales_contact"]}),
     ]
     readonly_fields = ["date_created","date_updated"]
-
+          
 
 @admin.register(Lead)
 class LeadAdmin(admin.ModelAdmin):
@@ -79,6 +81,7 @@ class ContractAdmin(admin.ModelAdmin):
             contract.save()
         else:
             messages.error(request, 'Contrat déjà validé')
+
     
 
 @admin.register(Event)

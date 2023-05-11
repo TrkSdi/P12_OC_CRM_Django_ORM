@@ -2,27 +2,24 @@ from rest_framework import serializers
 from user.models import CustomUser
 from CRM.models import Client, Lead, Contract, Event, EventStatus
 from rest_framework.serializers import ValidationError
+from django.contrib.auth.hashers import make_password
+
 
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
         fields = ['id',
-                    'username',
+                  'username',
                   'first_name',
                   'last_name',
                   'password',
                   'email',
-                  'role',]
-        extra_kwargs = {'password': {'write_only': True}}
+                  'role',
+                  'is_staff',
+                  'is_active',
+                  'is_superuser']
         
-        def create(self, validated_data):
-            password = validated_data.pop('password')
-            user = CustomUser(**validated_data)
-            user.set_password(password)
-            user.save()
-            return user
-
 
 class ClientSerializer(serializers.ModelSerializer):
     class Meta:
