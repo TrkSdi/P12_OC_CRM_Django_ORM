@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.http.request import HttpRequest
 from django.contrib.admin.views.decorators import staff_member_required
-from .models import Client, Lead, Contract, Event
+from .models import Client, Lead, Contract, Event, EventStatus
 from django.contrib import messages
 
 
@@ -14,7 +14,24 @@ class ClientAdmin(admin.ModelAdmin):
         ("Contact", {"fields": ["sales_contact"]}),
     ]
     readonly_fields = ["date_created","date_updated"]
-          
+    
+    ### Permissions ### 
+    def has_view_permission(self, request, obj=None):
+        if request.user.role == "Vente" or "Support" or "Gestion":
+            return True
+           
+    def has_add_permission(self, request):
+        if request.user.role == "Vente":
+            return True
+
+    def has_change_permission(self, request, obj=None):
+        if obj and obj.sales_contact == request.user:
+            return True
+    
+    def has_delete_permission(self, request, obj=None):
+        if obj and obj.sales_contact == request.user:
+            return True
+    
 
 @admin.register(Lead)
 class LeadAdmin(admin.ModelAdmin):
@@ -56,6 +73,22 @@ class LeadAdmin(admin.ModelAdmin):
         else:
             messages.error(request, 'Déjà client')
 
+    ### Permissions ### 
+    def has_view_permission(self, request, obj=None):
+        if request.user.role == "Vente" or "Support" or "Gestion":
+            return True
+           
+    def has_add_permission(self, request):
+        if request.user.role == "Vente":
+            return True
+
+    def has_change_permission(self, request, obj=None):
+        if obj and obj.sales_contact == request.user:
+            return True
+    
+    def has_delete_permission(self, request, obj=None):
+        if obj and obj.sales_contact == request.user:
+            return True
 
 @admin.register(Contract)
 class ContractAdmin(admin.ModelAdmin):
@@ -81,7 +114,23 @@ class ContractAdmin(admin.ModelAdmin):
             contract.save()
         else:
             messages.error(request, 'Contrat déjà validé')
+    
+    ### Permissions ###        
+    def has_view_permission(self, request, obj=None):
+        if request.user.role == "Vente" or "Support" or "Gestion":
+            return True
+           
+    def has_add_permission(self, request):
+        if request.user.role == "Vente":
+            return True
 
+    def has_change_permission(self, request, obj=None):
+        if obj and obj.sales_contact == request.user:
+            return True
+    
+    def has_delete_permission(self, request, obj=None):
+        if obj and obj.sales_contact == request.user:
+            return True
     
 
 @admin.register(Event)
@@ -97,3 +146,29 @@ class Eventadmin(admin.ModelAdmin):
         ("Contact", {"fields": ["support_contact"]}),
     ]
     readonly_fields = ["date_created","date_updated"]
+
+    ### Permissions ###        
+    def has_view_permission(self, request, obj=None):
+        if request.user.role in ["Vente", "Support", "Gestion"]:
+            return True
+           
+    def has_add_permission(self, request):
+        if request.user.role in ["Vente", "Support"]:
+            return True
+        
+    def has_change_permission(self, request, obj=None):
+        if obj and obj.client and obj.client.sales_contact == request.user:
+            return True
+        if obj and obj.support_contact == request.user:
+            return True
+    
+    def has_delete_permission(self, request, obj=None):
+        if obj and obj.client and obj.client.sales_contact == request.user:
+            return True
+        if obj and obj.support_contact == request.user:
+            return True
+        
+    
+    #@admin.register(EventStatus)
+    #class EventStatusadmin(admin.ModelAdmin):
+    #    pass

@@ -53,6 +53,7 @@ class Contract(models.Model):
 class EventStatus(models.Model):
     
     name = models.CharField(max_length=50)
+    creator = models.ForeignKey(AUTH_USER_MODEL, on_delete=models.PROTECT)
 
     def __str__(self):
         return f'{self.name}'

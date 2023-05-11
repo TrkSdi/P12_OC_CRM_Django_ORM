@@ -120,14 +120,28 @@ class EventPermissions(permissions.BasePermission):
     
     def has_object_permission(self, request, view, obj):
         user = request.user
-        print("USER ID", user.id)
         client = Client.objects.get(id=obj.client.id)
-        print("CLIENT", client)
-        print("SALES ID", client.sales_contact.id)
         if request.method in SAFE_METHODS:
             return True
         if obj.support_contact == user:
             return True
         if user.id == client.sales_contact.id:
+            return True
+
+
+class EventStatusPermissions(permissions.BasePermission):
+    def has_permission(self, request, view):
+        user = request.user
+        if user.role == "Vente" and view.action in ['list', 'create', 'retrieve', 'update', 'destroy']:
+            return True
+        elif user.role == "Support" and view.action in ['list', 'create', 'retrieve', 'update', 'destroy']:
+            return True
+        elif user.role == "Gestion" and view.action in ['list', 'retrieve']:
+            return True
+        else:
+            return False
+        
+    def has_object_permission(self, request, view, obj):
+        if obj.creator == request.user:
             return True
             

@@ -13,7 +13,8 @@ from rest_framework.serializers import ValidationError
 from user.models import CustomUser
 from CRM.models import Client, Lead, Contract, Event, EventStatus
 from api.permissions import (ContractPermissions, EventPermissions,
-                             LeadsPermissions, ClientsPermissions, AllowedToConvertLeads)
+                             LeadsPermissions, ClientsPermissions, 
+                             AllowedToConvertLeads, EventStatusPermissions)
 from api.serializers import (UserSerializer, ClientSerializer,
                              LeadSerializer, ContractSerializer,
                              EventSerializer, EventStatusSerializer)
@@ -106,7 +107,7 @@ class LeadViewSet(ModelViewSet):
 class ContractViewSet(ModelViewSet):
     serializer_class = ContractSerializer
     queryset = Contract.objects.all()
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, ContractPermissions]
     filter_backends = [DjangoFilterBackend, filters.SearchFilter]
     
     filterset_fields = ['client', 'client__email', 'date_created', 'amount']
@@ -123,7 +124,7 @@ class ContractViewSet(ModelViewSet):
 class EventViewSet(ModelViewSet):
     serializer_class = EventSerializer
     queryset = Event.objects.all()
-    permission_classes = []
+    permission_classes = [EventPermissions]
     filter_backends = [DjangoFilterBackend, filters.SearchFilter]
 
     filterset_fields = ['client','client__email', 'event_date']
@@ -139,4 +140,14 @@ class EventViewSet(ModelViewSet):
 class EventStatusViewSet(ModelViewSet):
     serializer_class = EventStatusSerializer
     queryset = EventStatus.objects.all()
-    permission_classes = [IsAuthenticated, EventPermissions]
+    permission_classes = [IsAuthenticated, EventStatusPermissions]
+
+    
+    def create(self, request, project_pk=None, *args, **kwargs):
+        data = request.data
+        event_status = EventStatus.objects.create(name=data['name'],
+                                     creator=request.user)
+        
+        event_status.save()
+        serializer = EventStatusSerializer(event_status)
+        return Response(serializer.data)
