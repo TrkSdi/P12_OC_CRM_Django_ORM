@@ -9,12 +9,16 @@ from django.contrib import messages
 ### CLIENT ###
 @admin.register(Client)
 class ClientAdmin(admin.ModelAdmin):
+    list_display = ("first_name", "last_name", "company_name", "sales_contact")
+    
     fieldsets = [
         ("Informations client", {"fields": ["first_name", "last_name", "email", "phone", "mobile", "company_name"]}),
         ("Date", {"fields": ['date_created','date_updated']}),
         ("Contact", {"fields": ["sales_contact"]}),
     ]
     readonly_fields = ["date_created","date_updated"]
+    
+    list_filter = ['last_name', 'email']
     
     ### REQUEST.USER SAVE & ASSIGNEMENT
     def save_model(self, request, obj, form, change):
@@ -23,6 +27,9 @@ class ClientAdmin(admin.ModelAdmin):
         super().save_model(request, obj, form, change)
         
     def get_changeform_initial_data(self, request):
+        """
+        assign request.user as default sales_contact
+        """
         initial = super().get_changeform_initial_data(request)
         initial['sales_contact'] = request.user.id
         return initial
@@ -66,6 +73,8 @@ class LeadAdmin(admin.ModelAdmin):
     ]
     readonly_fields = ["date_created","date_updated"]
     
+    list_filter = ['last_name', 'email']
+    
     ### REQUEST.USER SAVE & ASSIGNEMENT
     def save_model(self, request, obj, form, change):
         if not change:
@@ -73,6 +82,9 @@ class LeadAdmin(admin.ModelAdmin):
         super().save_model(request, obj, form, change)
     
     def get_changeform_initial_data(self, request):
+        """
+        assign request.user as default sales_contact
+        """
         initial = super().get_changeform_initial_data(request)
         initial['sales_contact'] = request.user.id
         return initial
@@ -123,7 +135,8 @@ class LeadAdmin(admin.ModelAdmin):
 @admin.register(Contract)
 class ContractAdmin(admin.ModelAdmin):
     list_display = ("client",
-                    "status")
+                    "status",
+                    "sales_contact")
     
     fieldsets = [
         ("Contrat", {"fields": ["client",
@@ -135,6 +148,8 @@ class ContractAdmin(admin.ModelAdmin):
     ]
     readonly_fields = ["date_created","date_updated"]
     
+    list_filter = ['client__last_name', 'client__email', 'date_created', 'amount']
+    
     ### REQUEST.USER SAVE & ASSIGNEMENT
     def save_model(self, request, obj, form, change):
         if not change:
@@ -142,6 +157,9 @@ class ContractAdmin(admin.ModelAdmin):
         super().save_model(request, obj, form, change)
         
     def get_changeform_initial_data(self, request):
+        """
+        assign request.user as default sales_contact
+        """
         initial = super().get_changeform_initial_data(request)
         initial['sales_contact'] = request.user.id
         return initial
@@ -179,6 +197,11 @@ class ContractAdmin(admin.ModelAdmin):
 ### EVENT ###
 @admin.register(Event)
 class Eventadmin(admin.ModelAdmin):
+    list_display = ('client',
+                    'contract',
+                    'event_status',
+                    'support_contact')
+    
     fieldsets = [
         ("Evenement", {"fields": ["contract",
                                   "client",
@@ -192,6 +215,7 @@ class Eventadmin(admin.ModelAdmin):
     ]
     readonly_fields = ["date_created","date_updated"]
 
+    list_filter = ['client__last_name', 'client__email', 'event_date']
 
     ### PERMISSIONS ###        
     def has_view_permission(self, request, obj=None):
@@ -220,6 +244,7 @@ class Eventadmin(admin.ModelAdmin):
 ### EVENT STATUS ###
 @admin.register(EventStatus)
 class EventStatusadmin(admin.ModelAdmin):
+    list_display = ("name",)
     fieldsets = [("Status", {"fields" : ["name", "creator"]})]
     
     ### REQUEST.USER SAVE & ASSIGNEMENT
@@ -229,6 +254,9 @@ class EventStatusadmin(admin.ModelAdmin):
         super().save_model(request, obj, form, change)
         
     def get_changeform_initial_data(self, request):
+        """
+        assign request.user as default creator
+        """
         initial = super().get_changeform_initial_data(request)
         initial['creator'] = request.user.id
         return initial

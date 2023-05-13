@@ -2,7 +2,31 @@ from django.contrib import admin
 from .models import CustomUser
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.hashers import make_password
+from django.contrib.auth.models import Group
 
+
+class GroupAdmin(admin.ModelAdmin):
+    list_display = ["name", "pk"]
+    
+    ### Permissions ###        
+    def has_view_permission(self, request, obj=None):
+        if request.user.role == "Gestion":
+            return True
+        
+    def has_add_permission(self, request):
+        if request.user.role == "Gestion":
+            return True
+
+    def has_change_permission(self, request, obj=None):
+        if request.user.role == "Gestion":
+            return True
+    
+    def has_delete_permission(self, request, obj=None):
+        if request.user.role == "Gestion":
+            return True
+
+admin.site.unregister(Group)
+admin.site.register(Group, GroupAdmin)
 
 @admin.register(CustomUser)
 class CustomUserAdmin(admin.ModelAdmin):

@@ -110,8 +110,8 @@ class ContractViewSet(ModelViewSet):
     permission_classes = [IsAuthenticated, ContractPermissions]
     filter_backends = [DjangoFilterBackend, filters.SearchFilter]
     
-    filterset_fields = ['client', 'client__email', 'date_created', 'amount']
-    search_fields = ['client', 'client__email', 'date_created', 'amount']
+    filterset_fields = ['client__last_name', 'client__email', 'date_created', 'amount']
+    search_fields = ['client__last_name', 'client__email', 'date_created', 'amount']
     
     @action(detail=True, methods=['get'])
     def validate_a_contract(self, request, pk):
@@ -127,8 +127,8 @@ class EventViewSet(ModelViewSet):
     permission_classes = [IsAuthenticated, EventPermissions]
     filter_backends = [DjangoFilterBackend, filters.SearchFilter]
 
-    filterset_fields = ['client','client__email', 'event_date']
-    search_fields = ['client', 'client__email', 'event_date']
+    filterset_fields = ['client__last_name','client__email', 'event_date']
+    search_fields = ['client__last_name', 'client__email', 'event_date']
     
     def perform_create(self, serializer):
         print("perform_create called")

@@ -63,30 +63,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
     def has_module_perms(self, app_label):
         return True
-
     
-"""
-class CustomUser(AbstractUser):
-    
-    ROLE = (
-        ('Gestion', 'Gestion'),
-        ('Vente', 'Vente'),
-        ('Support', 'Support'),
-    )
-    
-    first_name = models.CharField(max_length=50, null=True, blank=True)
-    last_name = models.CharField(max_length=50, null=True, blank=True)
-    username = models.CharField(max_length=50, unique=True, blank=False)
-    password = models.CharField(max_length=500)
-    email = models.EmailField(max_length=250, unique=True, blank=False)
-    role = models.CharField(max_length=10, choices=ROLE, null=True, blank=True)
-    is_staff = models.BooleanField(default=True)
-    is_active = models.BooleanField(default=True)
-    is_superuser = models.BooleanField(default=True)
-    
-    USERNAME_FIELD = 'username'
-    REQUIRED_FIELDS = ['email']
-    
-    def __str__(self):
-       return f'{self.username} ({self.role})'
-"""
+    class Meta:
+        verbose_name = "Collaborateur"
+        verbose_name_plural = "Collaborateurs"
