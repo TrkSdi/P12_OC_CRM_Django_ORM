@@ -28,7 +28,7 @@ class Lead(models.Model):
     company_name = models.CharField("Compagnie", max_length=250, null=True, blank=True, default=None)
     date_created = models.DateTimeField("Date de création", auto_now_add=True)
     date_updated = models.DateTimeField("Mis à jour le", auto_now=True)
-    sales_contact = models.ForeignKey(AUTH_USER_MODEL,limit_choices_to={'role': 'Vente'}, on_delete=models.PROTECT, default=None)
+    sales_contact = models.ForeignKey(AUTH_USER_MODEL,limit_choices_to={'role': 'Vente'}, on_delete=models.PROTECT)
     converted_to_client = models.BooleanField(default=False)
     
     def __str__(self):
@@ -53,10 +53,13 @@ class Contract(models.Model):
 class EventStatus(models.Model):
     
     name = models.CharField(max_length=50)
-    creator = models.ForeignKey(AUTH_USER_MODEL, on_delete=models.PROTECT)
+    creator = models.ForeignKey(AUTH_USER_MODEL, on_delete=models.PROTECT, null=True)
 
     def __str__(self):
         return f'{self.name}'
+    
+    class Meta:
+        verbose_name_plural = "Event Status"
 
 
 class Event(models.Model):

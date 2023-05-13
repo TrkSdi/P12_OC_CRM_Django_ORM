@@ -145,7 +145,7 @@ JAZZMIN_SETTINGS = {
     "site_logo": "logo-1.png",
     "welcome_sign": "Bienvenue sur le CRM EPIC EVENTS",
     "copyright": "Tarik SADKHI ©",
-    
+    "title": "user.CustomUser"
 }
 
 REST_FRAMEWORK = {

@@ -124,7 +124,7 @@ class ContractViewSet(ModelViewSet):
 class EventViewSet(ModelViewSet):
     serializer_class = EventSerializer
     queryset = Event.objects.all()
-    permission_classes = [EventPermissions]
+    permission_classes = [IsAuthenticated, EventPermissions]
     filter_backends = [DjangoFilterBackend, filters.SearchFilter]
 
     filterset_fields = ['client','client__email', 'event_date']
