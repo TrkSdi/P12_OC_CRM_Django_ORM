@@ -67,7 +67,7 @@ class LeadViewSet(ModelViewSet):
     search_fields = ['last_name', 'email']
     
     
-    def create(self, request, project_pk=None, *args, **kwargs):
+    def create(self, request, *args, **kwargs):
         data = request.data
         lead = Lead.objects.create(first_name=data['first_name'],
                                      last_name=data['last_name'],
@@ -81,12 +81,32 @@ class LeadViewSet(ModelViewSet):
         serializer = LeadSerializer(lead)
         return Response(serializer.data)
     
+    
+    def update(self, request, pk=None, *args, **kwargs):
+        lead = Lead.objects.get(pk=pk)
+        lead.converted_to_client = True
+        lead.save()
+        client = Client.objects.create(
+                first_name = lead.first_name,
+                last_name = lead.last_name,
+                email = lead.email, 
+                phone = lead.phone,
+                mobile = lead.mobile,
+                company_name = lead.company_name,
+                date_created = lead.date_created,
+                date_updated = lead.date_updated,
+                sales_contact = lead.sales_contact
+        )
+        client.save()
+        serializer = ClientSerializer(client)
+        return Response(serializer.data)
+            
+    
   
     @action(detail=True, methods=['get'])
 
     def convert_to_client(self,request, pk):
         lead = Lead.objects.get(pk=pk)
-        print("request.user:", request.user)
         lead.converted_to_client = True
         lead.save()
         client = Client.objects.create(
@@ -103,11 +123,7 @@ class LeadViewSet(ModelViewSet):
         client.save()
         return Response()
     
-    def get_permissions(self):
-        if self.action == 'convert_to_client':
-            # Définissez ici les permissions spécifiques à l'action convert_to_client
-            self.permission_classes = [IsAuthenticated, AllowedToConvertLeads]
-        return super(self.__class__, self).get_permissions()
+
 
 
 class ContractViewSet(ModelViewSet):

@@ -12,8 +12,6 @@ class AllowedToConvertLeads(permissions.BasePermission):
     
     def has_object_permission(self, request, view, obj):
         user = request.user
-        print('USER', user)
-        print('LEAD', obj.sales_contact)
         if user == obj.sales_contact:
             return True
 
@@ -32,20 +30,19 @@ class LeadsPermissions(permissions.BasePermission):
             return False
     
     def has_object_permission(self, request, view, obj):
-        print("has_object_permission called")
         user = request.user
         
         if view.action == 'convert_to_client':
             if obj.sales_contact == user:
-                print(f"User: {user.username} - Sales Contact: {obj.sales_contact.username}")
+
                 return True
             else:
                 return False
         elif obj.sales_contact == user:
-            print('OPT 3')
+            
             return True
         elif view.action in ['list', 'retrieve']:
-            print('OPT 1')
+            
             return True
         else:
             return False
