@@ -3,16 +3,6 @@ from rest_framework.permissions import SAFE_METHODS
 from CRM.models import Client, Lead
 
 
-#class AllowedToConvertLeads(permissions.BasePermission):
-#    def has_permission(self, request, view):
-#        user = request.user
-#        if user.role == "Vente":
-#            return True
-#
-#    def has_object_permission(self, request, view, obj):
-#        if obj.sales_contact == request.user:
-#            return True
-
 class AllowedToConvertLeads(permissions.BasePermission):
     
     def has_permission(self, request, view):
@@ -24,7 +14,7 @@ class AllowedToConvertLeads(permissions.BasePermission):
         user = request.user
         print('USER', user)
         print('LEAD', obj.sales_contact)
-        if user == obj.sales_contact and view.action == 'convert_to_client':
+        if user == obj.sales_contact:
             return True
 
 
@@ -120,11 +110,11 @@ class EventPermissions(permissions.BasePermission):
     
     def has_object_permission(self, request, view, obj):
         user = request.user
-        client = Client.objects.get(id=obj.client.id)
         if request.method in SAFE_METHODS:
             return True
         if obj.support_contact == user:
             return True
+        client = Client.objects.get(id=obj.client.id)
         if user.id == client.sales_contact.id:
             return True
 

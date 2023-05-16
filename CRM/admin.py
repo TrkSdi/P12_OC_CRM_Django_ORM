@@ -4,11 +4,14 @@ from django.http.request import HttpRequest
 from django.contrib.admin.views.decorators import staff_member_required
 from .models import Client, Lead, Contract, Event, EventStatus
 from django.contrib import messages
+from .admin_permissions import (ClientPermissions, EventStatusPermissions,
+                                LeadPermissions, ContractPermissions,
+                                EventPermissions)
 
 
 ### CLIENT ###
 @admin.register(Client)
-class ClientAdmin(admin.ModelAdmin):
+class ClientAdmin(ClientPermissions, admin.ModelAdmin):
     list_display = ("first_name", "last_name", "company_name", "sales_contact")
     
     fieldsets = [
@@ -34,28 +37,10 @@ class ClientAdmin(admin.ModelAdmin):
         initial['sales_contact'] = request.user.id
         return initial
     
-    
-    ### PERMISSIONS ### 
-    def has_view_permission(self, request, obj=None):
-        if request.user.role in ["Vente", "Support", "Gestion"]:
-            return True
-           
-    def has_add_permission(self, request):
-        if request.user.role == "Vente":
-            return True
-
-    def has_change_permission(self, request, obj=None):
-        if (obj and obj.sales_contact == request.user) or request.user.role in ["Gestion"]:
-            return True
-    
-    def has_delete_permission(self, request, obj=None):
-        if obj and obj.sales_contact == request.user:
-            return True
-
 
 ### LEAD ###
 @admin.register(Lead)
-class LeadAdmin(admin.ModelAdmin):
+class LeadAdmin(LeadPermissions, admin.ModelAdmin):
     list_display = ('first_name',
                     'last_name',
                     'converted_to_client',
@@ -79,6 +64,22 @@ class LeadAdmin(admin.ModelAdmin):
     def save_model(self, request, obj, form, change):
         if not change:
             obj.sales_contact = request.user
+        if obj.converted_to_client == True:
+            lead = Lead.objects.get(pk=obj.pk)
+            lead.save()
+            client = Client.objects.create(
+                    first_name = lead.first_name,
+                    last_name = lead.last_name,
+                    email = lead.email, 
+                    phone = lead.phone,
+                    mobile = lead.mobile,
+                    company_name = lead.company_name,
+                    date_created = lead.date_created,
+                    date_updated = lead.date_updated,
+                    sales_contact = lead.sales_contact
+            )
+            client.save()
+            
         super().save_model(request, obj, form, change)
     
     def get_changeform_initial_data(self, request):
@@ -90,6 +91,7 @@ class LeadAdmin(admin.ModelAdmin):
         return initial
     
     ### ACTION ###
+    ### A voir si on conserve ou non ###
     actions = ['convert_to_client']
     
     @admin.action(permissions=["change"])
@@ -113,27 +115,10 @@ class LeadAdmin(admin.ModelAdmin):
         else:
             messages.error(request, 'Déjà client')
 
-    ### PERMISSIONS ### 
-    def has_view_permission(self, request, obj=None):
-        if request.user.role == "Vente" or "Support" or "Gestion":
-            return True
-           
-    def has_add_permission(self, request):
-        if request.user.role == "Vente":
-            return True
-
-    def has_change_permission(self, request, obj=None):
-        if (obj and obj.sales_contact == request.user) or request.user.role in ["Gestion"]:
-            return True
-    
-    def has_delete_permission(self, request, obj=None):
-        if obj and obj.sales_contact == request.user:
-            return True
-
 
 ### CONTRACT ###
 @admin.register(Contract)
-class ContractAdmin(admin.ModelAdmin):
+class ContractAdmin(ContractPermissions, admin.ModelAdmin):
     list_display = ("client",
                     "status",
                     "sales_contact")
@@ -167,7 +152,7 @@ class ContractAdmin(admin.ModelAdmin):
     ### ACTION ###
     actions = ['validate_a_contract']
     
-    @admin.action(permissions=["change"])
+    @admin.action(description = "Valider le contrat", permissions=["change"])
     def validate_a_contract(self, request, queryset):
         contract = queryset.get()
         if contract.status is False:
@@ -175,28 +160,11 @@ class ContractAdmin(admin.ModelAdmin):
             contract.save()
         else:
             messages.error(request, 'Contrat déjà validé')
-    
-    ### PERMISSIONS ###        
-    def has_view_permission(self, request, obj=None):
-        if request.user.role == "Vente" or "Support" or "Gestion":
-            return True
-           
-    def has_add_permission(self, request):
-        if request.user.role == "Vente":
-            return True
-
-    def has_change_permission(self, request, obj=None):
-        if (obj and obj.sales_contact == request.user) or request.user.role in ["Gestion"]:
-            return True
-    
-    def has_delete_permission(self, request, obj=None):
-        if obj and obj.sales_contact == request.user:
-            return True
 
 
 ### EVENT ###
 @admin.register(Event)
-class Eventadmin(admin.ModelAdmin):
+class Eventadmin(EventPermissions, admin.ModelAdmin):
     list_display = ('client',
                     'contract',
                     'event_status',
@@ -216,66 +184,10 @@ class Eventadmin(admin.ModelAdmin):
     readonly_fields = ["date_created","date_updated"]
 
     list_filter = ['client__last_name', 'client__email', 'event_date']
-
-    ### PERMISSIONS ###        
-    def has_view_permission(self, request, obj=None):
-        if request.user.role in ["Vente", "Support", "Gestion"]:
-            return True
-           
-    def has_add_permission(self, request):
-        if request.user.role in ["Vente"]:
-            return True
-        
-    def has_change_permission(self, request, obj=None):
-        if obj and obj.client and obj.client.sales_contact == request.user:
-            return True
-        if request.user.role in ["Gestion"]:
-            return True
-        if obj and obj.support_contact == request.user:
-            return True
     
-    def has_delete_permission(self, request, obj=None):
-        if obj and obj.client and obj.client.sales_contact == request.user:
-            return True
-        if obj and obj.support_contact == request.user:
-            return True
-        
 
 ### EVENT STATUS ###
 @admin.register(EventStatus)
-class EventStatusadmin(admin.ModelAdmin):
+class EventStatusadmin(EventStatusPermissions, admin.ModelAdmin):
     list_display = ("name",)
-    fieldsets = [("Status", {"fields" : ["name", "creator"]})]
-    
-    ### REQUEST.USER SAVE & ASSIGNEMENT
-    def save_model(self, request, obj, form, change):
-        if not change:
-            obj.creator = request.user
-        super().save_model(request, obj, form, change)
-        
-    def get_changeform_initial_data(self, request):
-        """
-        assign request.user as default creator
-        """
-        initial = super().get_changeform_initial_data(request)
-        initial['creator'] = request.user.id
-        return initial
-    
-    ### PERMISSIONS ### 
-    def has_view_permission(self, request, obj=None):
-        if request.user.role in ["Vente", "Support", "Gestion"]:
-            return True
-        
-    def has_add_permission(self, request):
-        if request.user.role in ["Vente",]:
-            return True
-    
-    def has_change_permission(self, request, obj=None):
-        if obj and obj.creator == request.user:
-            return True
-        if request.user.role in ["Gestion"]:
-            return True
-    
-    def has_delete_permission(self, request, obj=None):
-        if obj and obj.creator == request.user:
-            return True
+    fieldsets = [("Status", {"fields" : ["name"]})]

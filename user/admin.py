@@ -34,16 +34,16 @@ class CustomUserAdmin(admin.ModelAdmin):
     fieldsets = [
         ("ID", {"fields": ["first_name", "last_name", "email"]}),
         ("Authentication", {"fields": ["username", "password"]}),
-        ("Permission", {"fields": ["role", "is_staff", "is_active", "is_superuser"]})
+        ("Permission", {"fields": ["role"]})
     ]
-    readonly_fields = ["is_staff", "is_active", "is_superuser"]
+
     
     def save_model(self, request, obj, form, change):
         if change:
             original_obj = self.model.objects.get(pk=obj.pk)
             if obj.password != original_obj.password:
                 obj.password = make_password(obj.password)
-        else:  # New model being created
+        else:
             obj.password = make_password(obj.password)
         
         super().save_model(request, obj, form, change)

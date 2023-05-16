@@ -83,6 +83,7 @@ class LeadViewSet(ModelViewSet):
     
   
     @action(detail=True, methods=['get'])
+
     def convert_to_client(self,request, pk):
         lead = Lead.objects.get(pk=pk)
         print("request.user:", request.user)
@@ -100,8 +101,13 @@ class LeadViewSet(ModelViewSet):
                 sales_contact = lead.sales_contact
         )
         client.save()
-        return Response('lead')
+        return Response()
     
+    def get_permissions(self):
+        if self.action == 'convert_to_client':
+            # Définissez ici les permissions spécifiques à l'action convert_to_client
+            self.permission_classes = [IsAuthenticated, AllowedToConvertLeads]
+        return super(self.__class__, self).get_permissions()
 
 
 class ContractViewSet(ModelViewSet):
@@ -113,7 +119,14 @@ class ContractViewSet(ModelViewSet):
     filterset_fields = ['client__last_name', 'client__email', 'date_created', 'amount']
     search_fields = ['client__last_name', 'client__email', 'date_created', 'amount']
     
-    @action(detail=True, methods=['get'])
+    ### a revoir
+    def perform_update(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data)
+        serializer.save()
+        return Response(serializer.data)
+    
+    @action(description = "Valider le contrat", detail=True, methods=['get'],)
     def validate_a_contract(self, request, pk):
         contract = Contract.objects.get(pk=pk)
         contract.status = True
@@ -131,7 +144,6 @@ class EventViewSet(ModelViewSet):
     search_fields = ['client__last_name', 'client__email', 'event_date']
     
     def perform_create(self, serializer):
-        print("perform_create called")
         if serializer.validated_data['contract'] is None:
             raise ValidationError("Le champ contrat ne peut pas être vide.")
         super().perform_create(serializer)

@@ -2,6 +2,7 @@ from django.db import models
 from django.forms import ValidationError
 from django.shortcuts import get_object_or_404
 from Epic_Events.settings import AUTH_USER_MODEL
+from django.db.models import Q
 
 
 class Client(models.Model):
@@ -13,7 +14,7 @@ class Client(models.Model):
     company_name = models.CharField("Compagnie", max_length=250, null=True, blank=True, default=None)
     date_created = models.DateTimeField("Date de création", auto_now_add=True)
     date_updated = models.DateTimeField("Mis à jour le", auto_now=True)
-    sales_contact = models.ForeignKey(AUTH_USER_MODEL, limit_choices_to={'role': 'Vente'}, on_delete=models.PROTECT, default=None, verbose_name="Contact")
+    sales_contact = models.ForeignKey(AUTH_USER_MODEL, limit_choices_to=Q(role='Vente')|Q(role='Gestion'), on_delete=models.PROTECT, default=None, verbose_name="Contact")
     
     def __str__(self):
         return self.first_name
@@ -31,7 +32,7 @@ class Lead(models.Model):
     company_name = models.CharField("Compagnie", max_length=250, null=True, blank=True, default=None)
     date_created = models.DateTimeField("Date de création", auto_now_add=True)
     date_updated = models.DateTimeField("Mis à jour le", auto_now=True)
-    sales_contact = models.ForeignKey(AUTH_USER_MODEL,limit_choices_to={'role': 'Vente'}, on_delete=models.PROTECT, verbose_name="Contact")
+    sales_contact = models.ForeignKey(AUTH_USER_MODEL,limit_choices_to=Q(role='Vente')|Q(role='Gestion'), on_delete=models.PROTECT, verbose_name="Contact")
     converted_to_client = models.BooleanField("Converti en client",default=False)
     
     def __str__(self):
@@ -62,7 +63,6 @@ class Contract(models.Model):
 class EventStatus(models.Model):
     
     name = models.CharField("Intitulé", max_length=50)
-    creator = models.ForeignKey(AUTH_USER_MODEL, on_delete=models.PROTECT, null=True, verbose_name="Initiateur")
 
     def __str__(self):
         return f'{self.name}'
@@ -77,7 +77,7 @@ class Event(models.Model):
     client = models.ForeignKey(Client, on_delete=models.CASCADE, null=True, blank=True, default=None, verbose_name="Client")
     date_created = models.DateTimeField("Date de création", auto_now_add=True)
     date_updated = models.DateTimeField("Mis à jour le", auto_now=True)
-    support_contact = models.ForeignKey(AUTH_USER_MODEL, limit_choices_to={'role': 'Support'}, on_delete=models.PROTECT, verbose_name="Contact")
+    support_contact = models.ForeignKey(AUTH_USER_MODEL, limit_choices_to=Q(role='Support')|Q(role='Gestion'), on_delete=models.PROTECT, verbose_name="Contact")
     event_status = models.ForeignKey(EventStatus, on_delete=models.CASCADE, verbose_name='Status')
     attendees = models.IntegerField("Nombre de participants")
     event_date = models.DateTimeField("Date de l'évènement")
