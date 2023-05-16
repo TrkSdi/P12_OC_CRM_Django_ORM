@@ -1,4 +1,5 @@
 
+
 # CLIENT
 class ClientPermissions():
     def has_view_permission(self, request, obj=None):

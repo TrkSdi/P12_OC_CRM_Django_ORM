@@ -91,10 +91,9 @@ class LeadAdmin(LeadPermissions, admin.ModelAdmin):
         return initial
     
     ### ACTION ###
-    ### A voir si on conserve ou non ###
     actions = ['convert_to_client']
     
-    @admin.action(permissions=["change"])
+    @admin.action(description="Convertir en client",permissions=["change"])
     def convert_to_client(self,request, queryset):
         lead = queryset.get()
         if lead.converted_to_client is False:
