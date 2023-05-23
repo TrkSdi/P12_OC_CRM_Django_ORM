@@ -102,5 +102,4 @@ class EventStatusSerializer(serializers.ModelSerializer):
         model = EventStatus
         fields = ['id',
                   'name',
-                  'creator'
                   ]

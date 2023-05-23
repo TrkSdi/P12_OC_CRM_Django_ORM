@@ -16,5 +16,7 @@ router.register('eventstatus', EventStatusViewSet, basename='event_status')
 
 urlpatterns = [
     path('api-auth/', include('rest_framework.urls')),
-    path('', include(router.urls))
+    path('', include(router.urls)),
 ]
+
+# Configure Basic Auth ou Access Token

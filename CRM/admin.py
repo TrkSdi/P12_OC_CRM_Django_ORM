@@ -64,7 +64,8 @@ class LeadAdmin(LeadPermissions, admin.ModelAdmin):
     def save_model(self, request, obj, form, change):
         if not change:
             obj.sales_contact = request.user
-        if obj.converted_to_client == True:
+        client = Client.objects.filter(email=obj.email).count()
+        if obj.converted_to_client == True and client == 0: 
             lead = Lead.objects.get(pk=obj.pk)
             lead.save()
             client = Client.objects.create(

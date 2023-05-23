@@ -14,10 +14,12 @@ from user.models import CustomUser
 from CRM.models import Client, Lead, Contract, Event, EventStatus
 from api.permissions import (ContractPermissions, EventPermissions,
                              LeadsPermissions, ClientsPermissions, 
-                             AllowedToConvertLeads, EventStatusPermissions)
+                              EventStatusPermissions,
+                             AllowedToConvertLeads)
 from api.serializers import (UserSerializer, ClientSerializer,
                              LeadSerializer, ContractSerializer,
                              EventSerializer, EventStatusSerializer)
+import logging
 
 
 class UserViewSet(ModelViewSet):
@@ -102,28 +104,29 @@ class LeadViewSet(ModelViewSet):
         return Response(serializer.data)
             
     
-  
-    @action(detail=True, methods=['get'])
-
-    def convert_to_client(self,request, pk):
-        lead = Lead.objects.get(pk=pk)
-        lead.converted_to_client = True
-        lead.save()
-        client = Client.objects.create(
-                first_name = lead.first_name,
-                last_name = lead.last_name,
-                email = lead.email, 
-                phone = lead.phone,
-                mobile = lead.mobile,
-                company_name = lead.company_name,
-                date_created = lead.date_created,
-                date_updated = lead.date_updated,
-                sales_contact = lead.sales_contact
-        )
-        client.save()
-        return Response()
     
-
+    @action(description="Convertir en client", detail=True, methods=['post'], permission_classes=[IsAuthenticated])
+    def convert_to_client(self,request, pk):
+        user = request.user
+        lead = Lead.objects.get(pk=pk)
+        if user == lead.sales_contact or user.role == "Gestion":
+            lead.converted_to_client = True
+            lead.save()
+            client = Client.objects.create(
+                    first_name = lead.first_name,
+                    last_name = lead.last_name,
+                    email = lead.email, 
+                    phone = lead.phone,
+                    mobile = lead.mobile,
+                    company_name = lead.company_name,
+                    date_created = lead.date_created,
+                    date_updated = lead.date_updated,
+                    sales_contact = lead.sales_contact
+            )
+            client.save()
+            return Response()
+        else:
+            return Response("You do not have the required authorizations for this operation")
 
 
 class ContractViewSet(ModelViewSet):
@@ -136,10 +139,10 @@ class ContractViewSet(ModelViewSet):
     search_fields = ['client__last_name', 'client__email', 'date_created', 'amount']
     
     ### a revoir
-    def perform_update(self, request, *args, **kwargs):
-        instance = self.get_object()
-        serializer = self.get_serializer(instance, data=request.data)
-        serializer.save()
+    def retrieve(self, request, pk, *args, **kwargs):
+        print("DATA", request.data)
+        contract =  Contract.objects.get(pk=pk)
+        serializer = ContractSerializer(contract)
         return Response(serializer.data)
     
     @action(description = "Valider le contrat", detail=True, methods=['get'],)
