@@ -13,9 +13,8 @@ from rest_framework.serializers import ValidationError
 from user.models import CustomUser
 from CRM.models import Client, Lead, Contract, Event, EventStatus
 from api.permissions import (ContractPermissions, EventPermissions,
-                             LeadsPermissions, ClientsPermissions, 
-                              EventStatusPermissions,
-                             AllowedToConvertLeads)
+                            LeadsPermissions, ClientsPermissions, 
+                            EventStatusPermissions)
 from api.serializers import (UserSerializer, ClientSerializer,
                              LeadSerializer, ContractSerializer,
                              EventSerializer, EventStatusSerializer)
