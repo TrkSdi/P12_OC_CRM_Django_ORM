@@ -10,7 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 
-import os
+from datetime import timedelta
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -46,7 +46,6 @@ INSTALLED_APPS = [
     'user',
     'rest_auth.registration',
 ]
-
 
 
 MIDDLEWARE = [
@@ -86,10 +85,9 @@ WSGI_APPLICATION = 'Epic_Events.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'EpicEvents',
+        'NAME': 'Epic_Events',
         'USER': 'admin_db',
         'PASSWORD': '123456',
-        
     }
 }
 
@@ -139,7 +137,7 @@ STATICFILES_DIRS = [BASE_DIR / "data"]
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 JAZZMIN_SETTINGS = {
-    
+
     "site_title": "EPICS EVENT CRM",
     "site_header": "EPICS EVENT",
     "site_brand": "EPICS EVENT",
@@ -155,8 +153,12 @@ REST_FRAMEWORK = {
         'rest_framework_simplejwt.authentication.JWTAuthentication'),
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAdminUser',
-        
     ],
+    'DATETIME_FORMAT': '%d/%m/%Y %H:%M'
 }
 
 AUTH_USER_MODEL = 'user.CustomUser'
+
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(hours=1),
+}
